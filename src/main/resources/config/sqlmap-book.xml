@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BookInfoDao">
+	<select id="list" parameterType="bookinfo" resultType="bookinfo">
+		SELECT *
+		FROM bookinfo ORDER BY regnum
+	</select>
+	<insert id="insert" parameterType="bookinfo">
+		INSERT INTO bookinfo
+		(regnum,isbn,bookname,writer,publisher,price,image,introduction)
+		VALUES
+		(BOOK_SEQ.nextval,#{isbn},#{bookname},#{writer},#{publisher},#{price},#{image},#{introduction})
+		<selectKey keyProperty="regnum" resultType="Integer">
+			SELECT
+			NVL(MAX(regnum),0) FROM bookinfo
+		</selectKey>
+	</insert>
+
+	<select id="searchByKeyword" parameterType="bookinfo"
+		resultType="bookinfo">
+
+		<if test="option.equals('bookname')">SELECT * FROM bookinfo WHERE BOOKNAME LIKE
+			'%'||#{keyword}||'%' ORDER BY regnum</if>
+		<if test="option.equals('writer')">SELECT * FROM bookinfo WHERE WRITER LIKE
+			'%'||#{keyword}||'%' ORDER BY regnum</if>
+		<if test="option.equals('publisher')">SELECT * FROM bookinfo WHERE PUBLISHER LIKE
+			'%'||#{keyword}||'%' ORDER BY regnum</if>
+		<if test="option==null or option.equals(' ')">1=1</if>
+
+	</select>
+
+	<select id="selectByRegnum" parameterType="Long"
+		resultType="bookinfo">
+		SELECT * FROM bookinfo WHERE regnum=#{regnum}
+	</select>
+
+	<select id="isbnChk" parameterType="String" resultType="int">
+		SELECT
+		COUNT(*) FROM bookinfo WHERE isbn=#{isbn}
+	</select>
+
+</mapper>
